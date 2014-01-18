@@ -4,58 +4,52 @@
 <head>
 </head>
     <body>
-    <h1 class="title"
+    <h1 class="title">Bouncy balls</h1>
     
     <div class="gameBox"></div> <!-- main game div -->
 
     <script src="./lib/underscore.js"></script>
-    <script src="http://d3js.org/d3.v2.min.js?2.10.1"></script>
+    <script src="./lib/d3.v3.js"></script>
         <script>
+        var title = d3.select("h1")
+            .style({"font" : "sans-serif"});
         var body = d3.select("body");
-        body.style("background-color", "#e3e3e3");
+        // body.style("background-color", "#e3e3e3");
 
-        var w = 700, h = 450;
-        var svg = body.append("svg")
-            .attr("width", w)
-            .attr("height", h);
-
-        var container = svg.append("rect")
+        var w = window.innerWidth, h = window.innerHeight;
+        
+        var container = body.append("svg")
             .attr("width", w)
             .attr("height", h)
             .style("fill", "white");
+       
+        var circleMovement = {
+                    "r" : 10,
+                    "cx": function(){ return Math.random() * w; },
+                    "cy": function(){ return Math.random() * h; }
+                    };
 
-        // var circle = svg.append("circle");
+        var allEnemies = container.selectAll("circle")
+                .data(d3.range(0,80))
+                .enter()
+                .append("circle")
+                .style("fill", function(i){ return "#"+((1<<24)*Math.random()|0).toString(16)})
+                .attr(circleMovement);
+               
+        var enemyOnTheMove = function(){
+            container.selectAll("circle")
+            .transition().duration(2000)
+            .attr(circleMovement)};
+
+     
+        setInterval(enemyOnTheMove, 2500);  // dance, dancy balls, dance!        
         
-        var allEnemies = svg.selectAll("circle")
-                .data(_.range(0,100))
-                .enter();
-
-        var enemyOnTheMove = function(enemy){
-            // enemy
-        }
-        allEnemies.append("circle")
-            .style("fill", function(i){ return "#"+((1<<24)*Math.random()|0).toString(16)})
-            .attr("r", 10)
-
-            .attr("cx", function() {
-                return Math.random() * w ;
-            })
-            .attr("cy", function(){
-                return Math.random() * h;
-            })
-            .transition().attr("cy", function(){
-                return Math.random() * h ;
-            }).duration(2000)
-            .transition().attr("cx", function(){
-                return Math.random() * w ;
-            })
-             .duration(2000);
-
-        var goodCircle = svg.append("goodCircle")
-            .attr("r", 10)
-            .style("fill", "white")
-            .style("border", "black")
-
+        var goodCircle = container.selectAll("goodCircle");
+        d3.select("goodCircle").enter().append()
+            .attr("r", 30)
+            .style({"fill" : "red"})
+            // .style("border", "black")
+       
 
 
         </script>

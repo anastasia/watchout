@@ -2,19 +2,29 @@
 <meta charset="utf-8">
 <html>
 <head>
+    <link rel="stylesheet" type="text/css" href="./lib/bouncy.css" />
+    <script src="./lib/underscore.js"></script>
+    <script src="./lib/d3.v3.js"></script>
+    <script src="lib/jquery.js"></script>
+
 </head>
-    <body>
-    <h1 class="title">Bouncy balls</h1>
+<body>
+    <div class="titleDiv">
+        <h1 class="title">bouncy balls</h1>
+    </div>
+    <div class="score"><p id="yourScoreText">your score </p></score>
+    <div class="goodCircle"></div>
     
     <div class="gameBox"></div> <!-- main game div -->
 
-    <script src="./lib/underscore.js"></script>
-    <script src="./lib/d3.v3.js"></script>
+  
         <script>
-        var title = d3.select("h1")
-            .style({"font" : "sans-serif"});
+        var title = d3.select("h1");
         var body = d3.select("body");
-        // body.style("background-color", "#e3e3e3");
+        var gameStats = {
+                      score: 0,
+                      bestScore: 0
+                    };
 
         var w = window.innerWidth, h = window.innerHeight;
         
@@ -29,29 +39,54 @@
                     "cy": function(){ return Math.random() * h; }
                     };
 
+        var circleData = d3.range(0,80);
+
         var allEnemies = container.selectAll("circle")
-                .data(d3.range(0,80))
+                .data(circleData)
+                .attr("class", "enemy")
                 .enter()
                 .append("circle")
                 .style("fill", function(i){ return "#"+((1<<24)*Math.random()|0).toString(16)})
-                .attr(circleMovement);
+    
+        container.selectAll(".enemy").attr(circleMovement);
                
         var enemyOnTheMove = function(){
             container.selectAll("circle")
             .transition().duration(2000)
-            .attr(circleMovement)};
+            .attr(circleMovement)
+        };
 
-     
-        setInterval(enemyOnTheMove, 2500);  // dance, dancy balls, dance!        
+        // d3.timer(enemyOnTheMove, 2000);
+        setInterval(enemyOnTheMove, 2000); // dance, dancy balls, dance!                
         
-        var goodCircle = container.selectAll("goodCircle");
-        d3.select("goodCircle").enter().append()
-            .attr("r", 30)
-            .style({"fill" : "red"})
-            // .style("border", "black")
+        var playerData = [500]; // gotta concat the data, otherwise you overwrite
        
+        var player = container.selectAll("circle") // your player
+            .data(circleData.concat(playerData))
+            .enter()
+            .append("circle")
+            .attr("r", 30)
+            .attr({})
+            .attr("class", "player")
+            .attr({
+                "cx" : 100,
+                "cy" : 100
+            })
+            .style({"fill" : "red",
+                    "border":"black"});
+        // var dragMove =  d3.event.dx, d3.event.dy;
 
+        var score = d3.select(".score");
+
+        player.on('mousedown', function(event){
+          container.on('mousemove', function(){
+            var pos = d3.mouse(this);
+            player.attr('cx', pos[0])
+                  .attr('cy', pos[1]);
+                  console.log(pos)
+          });
+        });
 
         </script>
-    </body>
+</body>
 </html>

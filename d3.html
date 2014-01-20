@@ -12,16 +12,14 @@
     <div class="titleDiv">
         <h1 class="title">bouncy balls</h1>
     </div>
-    <div class="score"><p id="yourScoreText">your score </p></score>
-    <div class="goodCircle"></div>
+    <div class="score"></score>
     
-    <div class="gameBox"></div> <!-- main game div -->
 
   
         <script>
         var title = d3.select("h1");
         var body = d3.select("body");
-        var r = 15;
+        var r = 20;
         var gameStats = {
                       score: 0,
                       bestScore: 0
@@ -40,15 +38,17 @@
                     "cy": function(){ return Math.random() * h; }
                     };
 
-        var circleData = d3.range(0,40);
+        var circleData = d3.range(0,30);
 
         var allEnemies = container.selectAll("circle")
                 .data(circleData)
                 .enter()
                 .append("circle")
                 .attr("class", "enemy")
-                .style("fill", "black" )
-    // function(i){ return "#"+((1<<24)*Math.random()|0).toString(16)}
+                .style("fill", "black" );
+        
+
+    // 
         container.selectAll(".enemy").attr(circleMovement);
                
         var enemyOnTheMove = function(){
@@ -60,17 +60,21 @@
         setInterval(enemyOnTheMove, 2000); // dance, dancy balls, dance!                
         
         var playerData = [500]; // gotta concat the data, otherwise you overwrite
+        
        
+
         var player = container.selectAll("circle") // your player
             .data(circleData.concat(playerData))
             .enter()
             .append("circle")
-            .attr({"r" : r, "class" : "player",
+            .attr({ "r" : r, "class" : "player",
                 cx : w / 2, cy : h / 2
             })
-            
-            .style({ fill : "white",
-                    stroke : "black"});
+            .style('fill', 'black')
+            var changeColors = function(en){
+                var color = "#"+((1<<24)*Math.random()|0).toString(16)
+                return en.style('fill', color);
+            }
 
         var drag = d3.behavior.drag().on("drag", dragmove);
 
@@ -91,15 +95,24 @@
                 var a = singleEnemy.attr('cx') - x;
                 var b = singleEnemy.attr('cy') - y;
                 if ((Math.sqrt(a*a + b*b)) < r * 2){
-                    console.log("hit!")
                     gameStats.score = 0;
                 } else {
-                    score++;
+                    gameStats.score++;
                 }
+                d3.select('.score').text("score: " + Math.round(gameStats.score / 200));
+
             })
 
+
         }
-        setInterval(collisionDetection, 0)
+        d3.timer(collisionDetection)
+        var epilepticColors = function(){
+            d3.selectAll('.enemy').each(function(d, i){
+                changeColors(d3.select(this))
+            })
+        }
+        setInterval(epilepticColors, 200)
+
         </script>
 </body>
 </html>

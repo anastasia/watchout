@@ -21,6 +21,7 @@
         <script>
         var title = d3.select("h1");
         var body = d3.select("body");
+        var r = 15;
         var gameStats = {
                       score: 0,
                       bestScore: 0
@@ -34,24 +35,24 @@
             .style("fill", "white");
        
         var circleMovement = {
-                    "r" : 10,
+                    "r" : r,
                     "cx": function(){ return Math.random() * w; },
                     "cy": function(){ return Math.random() * h; }
                     };
 
-        var circleData = d3.range(0,80);
+        var circleData = d3.range(0,40);
 
         var allEnemies = container.selectAll("circle")
                 .data(circleData)
-                .attr("class", "enemy")
                 .enter()
                 .append("circle")
+                .attr("class", "enemy")
                 .style("fill", function(i){ return "#"+((1<<24)*Math.random()|0).toString(16)})
     
         container.selectAll(".enemy").attr(circleMovement);
                
         var enemyOnTheMove = function(){
-            container.selectAll("circle")
+            container.selectAll(".enemy")
             .transition().duration(2000)
             .attr(circleMovement)
         };
@@ -65,27 +66,25 @@
             .data(circleData.concat(playerData))
             .enter()
             .append("circle")
-            .attr("r", 30)
-            .attr({})
-            .attr("class", "player")
-            .attr({
-                "cx" : 100,
-                "cy" : 100
+            .attr({"r" : r * 1.8,
+                "class" : "player",
+                cx : w / 2, cy : h / 2
             })
-            .style({"fill" : "red",
-                    "border":"black"});
-        // var dragMove =  d3.event.dx, d3.event.dy;
+            
+            .style({ fill : "white",
+                    stroke : "black"});
 
         var score = d3.select(".score");
 
-        player.on('mousedown', function(event){
-          container.on('mousemove', function(){
-            var pos = d3.mouse(this);
-            player.attr('cx', pos[0])
-                  .attr('cy', pos[1]);
-                  console.log(pos)
-          });
-        });
+        var drag = d3.behavior.drag().on("drag", dragmove);
+
+        var dragmove = function() {
+            var x = d3.event.x;
+            var y = d3.event.y;
+            player.attr({ cx: x, cy: y });
+        }
+
+        player.call(drag);
 
         </script>
 </body>

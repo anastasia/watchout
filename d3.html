@@ -12,7 +12,10 @@
     <div class="titleDiv">
         <h1 class="title">bouncy balls</h1>
     </div>
-    <div class="score"></score>
+    <div class="score">
+        <li class="bestScore">best score: 0</li>
+        <li class="yourScore">current: 0</li>
+    </div>
     
 
   
@@ -99,8 +102,14 @@
                 } else {
                     gameStats.score++;
                 }
-                d3.select('.score').text("score: " + Math.round(gameStats.score / 200));
+                var score = Math.round(gameStats.score / 200);
+                d3.select('.yourScore').text("current: " + score);
+                if(score > gameStats.bestScore){
+                    gameStats.bestScore = score;
+                    console.log(gameStats.bestScore)
+                    d3.select('.bestScore').text("best score: " + gameStats.bestScore);
 
+                }
             })
 
 

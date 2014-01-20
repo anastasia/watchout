@@ -47,8 +47,8 @@
                 .enter()
                 .append("circle")
                 .attr("class", "enemy")
-                .style("fill", function(i){ return "#"+((1<<24)*Math.random()|0).toString(16)})
-    
+                .style("fill", "black" )
+    // function(i){ return "#"+((1<<24)*Math.random()|0).toString(16)}
         container.selectAll(".enemy").attr(circleMovement);
                
         var enemyOnTheMove = function(){
@@ -57,7 +57,6 @@
             .attr(circleMovement)
         };
 
-        // d3.timer(enemyOnTheMove, 2000);
         setInterval(enemyOnTheMove, 2000); // dance, dancy balls, dance!                
         
         var playerData = [500]; // gotta concat the data, otherwise you overwrite
@@ -66,26 +65,41 @@
             .data(circleData.concat(playerData))
             .enter()
             .append("circle")
-            .attr({"r" : r * 1.8,
-                "class" : "player",
+            .attr({"r" : r, "class" : "player",
                 cx : w / 2, cy : h / 2
             })
             
             .style({ fill : "white",
                     stroke : "black"});
 
-        var score = d3.select(".score");
-
         var drag = d3.behavior.drag().on("drag", dragmove);
 
-        var dragmove = function() {
+        function dragmove() {
             var x = d3.event.x;
             var y = d3.event.y;
-            player.attr({ cx: x, cy: y });
+            player.attr({ cx: x, cy: y })
         }
 
         player.call(drag);
+        var score = d3.select(".score");
 
+        var collisionDetection = function(){
+            var x = player.attr('cx');
+            var y = player.attr('cy');
+            d3.selectAll('.enemy').each(function(d, i){
+                var singleEnemy = d3.select(this);
+                var a = singleEnemy.attr('cx') - x;
+                var b = singleEnemy.attr('cy') - y;
+                if ((Math.sqrt(a*a + b*b)) < r * 2){
+                    console.log("hit!")
+                    gameStats.score = 0;
+                } else {
+                    score++;
+                }
+            })
+
+        }
+        setInterval(collisionDetection, 0)
         </script>
 </body>
 </html>
